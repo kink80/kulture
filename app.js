@@ -35,7 +35,18 @@ app.configure('development', function(){
 
 app.put('/addcat/:title', function(req, res) {
  api.addcategory(req.params.title, function(err, cat) {
-   console.log(cat);
+    if(err && err.error) {
+      console.log(err);
+      res.locals = {
+        error: 'Category already exists'
+      }
+      res.render('error');
+    } else {
+      res.locals = {
+        name: req.params.title
+      };
+      res.render('addcategory');
+    }
  });
 });
 

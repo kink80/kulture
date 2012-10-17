@@ -2,9 +2,15 @@ var Category = require('../models/category.js'),
     Event = require('../models/event.js');
 
 exports.addcategory = function(title, callback) {
-  var category = new Category({ title: title });
-  category.save();
-  callback(null, category);
+  Category.findOne({title: title }, function(err, cat) {
+     if(cat) {
+       callback({error: 'exists'}, cat);
+     } else {
+      var category = new Category({ title: title });
+      category.save();
+      callback(null, category);
+     }
+  });
 };
 
 exports.listcategories = function(callback) {
