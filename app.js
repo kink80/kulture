@@ -70,6 +70,10 @@ app.get('/', function(req, res) {
   });
 });
 
+app.get('/events/:date', function(req, res) {
+
+});
+
 var blocks = {};
 
 hbs.registerHelper('extend', function(name, context) {

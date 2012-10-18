@@ -1,5 +1,6 @@
 var Category = require('../models/category.js'),
-    Event = require('../models/event.js');
+    Event = require('../models/event.js'),
+    moment = require('moment');
 
 exports.addcategory = function(title, callback) {
   Category.findOne({title: title }, function(err, cat) {
@@ -31,7 +32,11 @@ exports.addEvent = function(category, type, www, fee, callback) {
   });
 };
 
-exports.listEvents = function(title, callback) {
+exports.listEvents = function(title, date, callback) {
+   var date = moment(date, ["YYYYMMDD", "YYMMDD", "YYMM", "YYYY"]);
+   if(!date.isValid()) {
+       date = moment();
+   }
    Category.findOne({title: title}, function(err, category) {
      var events = Event.find({category: category._id}, function(e, events) {
        callback(null, events);
