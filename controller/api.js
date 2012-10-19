@@ -16,14 +16,22 @@ exports.addcategory = function(title, callback) {
   });
 };
 
+exports.deletecategory = function(title, callback) {
+  Category.findOne({title: title}, function(err, cat) {
+      Event.remove({category: cat._id});
+      cat.remove(function(err) {
+        callback(err);   
+      });
+  });
+};
+
 exports.setdefaultcategory = function(title, callback) {
-  Category.update({}, { $set: {isdefault: false} }, false, true); 
-  Category.findOne({title: title }, function(err, cat) {
-    cat.isdefault = true;
-    cat.save();
-    callback(null, {
-        category: cat
-    });
+  Category.find({}, function(e, cats) {
+      cats.forEach(function(c) {
+        c.isdefault = (c.title === title);
+        c.save();
+      });
+      callback(e);
   });
 };
 
@@ -46,17 +54,37 @@ exports.listcategories = function(callback) {
   });
 };
 
-exports.addEvent = function(category, type, www, fee, callback) {
-  Category.findOne({title: category}, function(err, category) {
-    var evt = new Event({
-      category: category._id,
-      type: type,
-      www: www,
-      fee: fee
-    }).save();
-    callback(null, {
-       event: evt
-    });
+exports.newEvent = function(title, callback) {
+ var hours = [];
+ for(var i = 0; i < 24; i++) {
+   hours.push(i);
+ };
+ var minutes = [0, 15, 30, 45];
+ var eventtypes = [];
+ eventtypes.push({
+   type: 'oneoff',
+   label: 'One-off'
+ });
+ eventtypes.push({
+   type: 'continuous',
+   label: 'Continuous'
+ });
+ callback(null, {
+    category: title,
+    openinghour: hours,
+    openingminute: minutes,
+    closinghour: hours,
+    closingminute: minutes,
+    eventtype: eventtypes
+ });
+};
+
+exports.addEvent = function(title, eventObject, callback) {
+  Category.findOne({title: title}, function(err, category) {
+    eventObject.category = category._id;
+    var evt = new Event(eventObject);
+    evt.save();
+    callback(null, evt);
   });
 };
 
@@ -68,6 +96,18 @@ linkObject = function(date, title) {
      link: url,
      name: linkname
    }; 
+};
+
+exports.listCategoryEvents = function(title, callback) {
+  Category.findOne({title: title}, function(err, category) {
+    var events = Event.find({
+         category: category._id,
+       }, function(e, events) {
+       callback(null, {
+           events: events
+       }); 
+     });
+  });
 };
 
 exports.listEvents = function(title, date, callback) {

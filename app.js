@@ -32,24 +32,54 @@ app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
+app.get('/cat/list', function(req, res) {
+  api.listcategories(function(err, result) {
+    res.locals = result;
+    res.render('categories');
+  });
+});
 
-app.put('/addcat/:title', function(req, res) {
- api.addcategory(req.params.title, function(err, result) {
+app.post('/cat/add', function(req, res) {
+ api.addcategory(req.body.title, function(err, result) {
     if(err && err.error) {
       res.locals = err; 
       res.render('error');
     } else {
-      res.locals = result;
-      res.render('addcategory');
+        res.redirect('/cat/list');
     }
  });
 });
 
-app.put('/defaultcat/:title', function(req, res) {
- api.setdefaultcategory(req.params.title, function(err, result) {
-    res.locals = result;
-    res.render('defaultcategory');
+app.post('/cat/default', function(req, res) {
+ api.setdefaultcategory(req.body.title, function(err, result) {
+    res.redirect('/cat/list');
  });
+});
+
+app.post('/cat/delete', function(req, res) {
+ api.deletecategory(req.body.title, function(err, result) {
+    res.redirect('/cat/list');
+ });
+});
+
+app.get('/cat/listevents/:title', function(req, res) {
+ api.listCategoryEvents(req.params.title, function(err, result) {
+    res.locals = result;
+    res.render('allevents');
+ });
+});
+
+app.get('/cat/newevent/:title', function(req, res) {
+  api.newEvent(req.params.title, function(err, result) {
+     res.locals = result;
+     res.render('newevent');
+  });
+});
+
+app.post('/cat/addevent/:title', function(req, res) {
+  api.addEvent(req.params.title, req.body, function(err, result) {
+     res.redirect('/cat/listevents/' + req.params.title);
+  });
 });
 
 app.get('/', function(req, res) {

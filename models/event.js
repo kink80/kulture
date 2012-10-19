@@ -4,11 +4,14 @@ var mongoose = require('mongoose'),
 
 var eventSchema = new Schema({
     category: ObjectId,
+    title: String,
     type: String,
     starts: {type: Date, default: Date.now},
     ends: {type: Date, default: Date.now},
-    hour: String,
-    minute: String,
+    openhour: String,
+    openminute: String,
+    closehour: String,
+    closeminute: String,
     www: String,
     fee: String
 });

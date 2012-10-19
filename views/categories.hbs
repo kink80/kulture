@@ -1,8 +1,22 @@
 <ul>
 {{#each categories}}
 <li class="categoryitem">
-  <a class="category" href="/cat/{{this.title}}">{{this.title}}</a>
+  <a class="category" href="/cat/listevents/{{this.title}}">Events for {{this.title}}</a>
+  {{#unless this.isdefault}}
+    <form action="/cat/default" method="post">
+      <button type="submit">Make default</button>
+      <input type="hidden" name="title" value="{{this.title}}">
+    </form>
+  {{/unless}}
+  <form action="/cat/delete" method="post">
+     <button type="submit">Delete</button>
+     <input type="hidden" name="title" value="{{this.title}}">
+  </form>
+  <a href="/cat/newevent/{{this.title}}">New event</a>
 </li>
 {{/each}}
 </ul>
-
+<form action="/cat/add" method="post">
+  <input name="title" type="text">
+  <button type="submit">Add</button>
+</form>
