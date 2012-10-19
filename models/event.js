@@ -7,6 +7,8 @@ var eventSchema = new Schema({
     type: String,
     starts: {type: Date, default: Date.now},
     ends: {type: Date, default: Date.now},
+    hour: String,
+    minute: String,
     www: String,
     fee: String
 });

@@ -34,44 +34,42 @@ app.configure('development', function(){
 
 
 app.put('/addcat/:title', function(req, res) {
- api.addcategory(req.params.title, function(err, cat) {
+ api.addcategory(req.params.title, function(err, result) {
     if(err && err.error) {
-      console.log(err);
-      res.locals = {
-        error: 'Category already exists'
-      }
+      res.locals = err; 
       res.render('error');
     } else {
-      res.locals = {
-        name: req.params.title
-      };
+      res.locals = result;
       res.render('addcategory');
     }
  });
 });
 
-app.get('/cat/:title', function(req, res) {
- api.listEvents(req.params.title, function(err, events) {
-    res.locals = {
-      category: req.params.title,
-      events: events
-    };
-    res.render('events');
+app.put('/defaultcat/:title', function(req, res) {
+ api.setdefaultcategory(req.params.title, function(err, result) {
+    res.locals = result;
+    res.render('defaultcategory');
  });
 });
 
 app.get('/', function(req, res) {
-  api.listcategories(function(err, categories) {
-    res.locals = {
-      title: 'Categories',
-      categories: categories
-    }
-    res.render('categories');
+  res.redirect('/events');  
+});
+
+app.get('/events/:date/:category', function(req, res) {
+  api.listEvents(req.params.category, req.params.date, function(err, result) {
+    res.locals = result;
+    res.render('events');
   });
 });
 
-app.get('/events/:date', function(req, res) {
 
+app.get('/events', function(req, res) {
+  var today = api.todaysformatteddate();
+  api.getdefaultcategory(function(err, category) {
+    var targetUrl = '/events/' + today + '/' + category.title;
+    res.redirect(targetUrl);
+  });
 });
 
 var blocks = {};

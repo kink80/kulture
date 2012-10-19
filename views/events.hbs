@@ -1,4 +1,19 @@
 <div>{{category}}</div>
+<div>{{date}}</div>
+<ul>
+<li>
+  <a href="{{today.link}}">
+    {{today.name}}
+  </a>
+</li>
+{{#each futuredates}}
+  <li>
+    <a href="{{this.link}}">
+      {{this.name}}
+    </a>
+  </li>
+{{/each}}
+</ul>
 <ul>
 {{#each events}}
 <li class="eventitem">
