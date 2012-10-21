@@ -62,6 +62,12 @@ app.post('/cat/delete', function(req, res) {
  });
 });
 
+app.post('/cat/deleteall', function(req, res) {
+ api.deleteallcategories(function(err, result) {
+    res.redirect('/cat/list');
+ });
+});
+
 app.get('/cat/listevents/:title', function(req, res) {
  api.listCategoryEvents(req.params.title, function(err, result) {
     res.locals = result;

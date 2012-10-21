@@ -18,10 +18,23 @@ exports.addcategory = function(title, callback) {
 
 exports.deletecategory = function(title, callback) {
   Category.findOne({title: title}, function(err, cat) {
+    if(cat) {
       Event.remove({category: cat._id});
       cat.remove(function(err) {
         callback(err);   
       });
+    } else {
+      callback();
+    }
+  });
+};
+
+exports.deleteallcategories = function(callback) {
+  Category.find({}, function(e, cats) {
+      cats.forEach(function(c) {
+        c.remove();
+      });
+      callback(e);
   });
 };
 
@@ -60,22 +73,14 @@ exports.newEvent = function(title, callback) {
    hours.push(i);
  };
  var minutes = [0, 15, 30, 45];
- var eventtypes = [];
- eventtypes.push({
-   type: 'oneoff',
-   label: 'One-off'
- });
- eventtypes.push({
-   type: 'continuous',
-   label: 'Continuous'
- });
+ var repeats = [24 * 60 * 60 * 1000, 7 * 24 * 60 * 60 * 1000];
  callback(null, {
     category: title,
     openinghour: hours,
     openingminute: minutes,
     closinghour: hours,
     closingminute: minutes,
-    eventtype: eventtypes
+    repeats: repeats
  });
 };
 
