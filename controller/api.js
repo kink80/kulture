@@ -1,6 +1,7 @@
 var Category = require('../models/category.js'),
     Event = require('../models/event.js'),
-    moment = require('moment');
+    moment = require('moment'),
+    _ = require('underscore');
 
 exports.addcategory = function(title, callback) {
   Category.findOne({title: title }, function(err, cat) {
@@ -121,28 +122,34 @@ exports.listEvents = function(title, date, callback) {
        date = moment();
    }
    Category.findOne({title: title}, function(err, category) {
-     var futuredates = [];
-     var startdate = date;
+     var futuredates = [],
+         startdate = date;
      for(var i = 0; i < 7; i++) {
        var dt = new moment(date).add('d', i);
        futuredates.push(linkObject(dt, title));
      };
 
-     var events = Event.find({
-         category: category._id,
-         starts: {
-            lte: date
-         },
-         ends: {
-            gte: date
-         }
+     Event.find({
+            category: category._id,
+            starts: { $lte: date },
+            ends: { $gte: date }
        }, function(e, events) {
+       var filtered = _.filter(events, function(event) {
+         if(event.every === 0) {
+           return true;
+         } else {
+           var from = moment(date),
+               start = moment(event.starts),
+               diff = from.sod().milliseconds() - start.sod().milliseconds();              return diff % event.every == 0;
+         }
+         return false;
+       });
        callback(null, {
            date: date,
            futuredates: futuredates,
            today: linkObject(new moment(), title),
            category: title,
-           events: events
+           events: filtered 
        });
      });
    })

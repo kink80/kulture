@@ -1,17 +1,18 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    ObjectId = Schema.ObjectId;
+    ObjectId = Schema.ObjectId,
+    moment = require('moment');
 
 var eventSchema = new Schema({
     category: ObjectId,
     title: String,
-    starts: {type: Date, default: Date.now},
-    ends: {type: Date, default: Date.now},
+    starts: {type: Date, default: new moment().sod()},
+    ends: {type: Date, default: new moment().eod()},
     every: {type: Number, default: 0},
-    openhour: String,
-    openminute: String,
-    closehour: String,
-    closeminute: String,
+    openhour: {type: Number, default: 0 },
+    openminute: {type: Number, default: 0},
+    closehour: {type: Number, default: 23} ,
+    closeminute: {type: Number, default: 45},
     www: String,
     fee: String
 });
