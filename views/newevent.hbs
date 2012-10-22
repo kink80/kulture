@@ -1,0 +1,31 @@
+<form action="/cat/addevent/{{category}}" method="post">
+  <input type="text" name="title">
+  <select name="type">
+    {{#each eventtype}}
+      <option value="{{type}}">{{label}}</option>
+    {{/each}}
+  </select>
+  <select name="openhour">
+    {{#each openinghour}}
+      <option value="{{this}}">{{this}}</option>
+    {{/each}}
+  </select>
+  <select name="openminute">
+    {{#each openingminute}}
+      <option value="{{this}}">{{this}}</option>
+    {{/each}}
+  </select>
+  <select name="closehour">
+    {{#each closinghour}}
+      <option value="{{this}}">{{this}}</option>
+    {{/each}}
+  </select>
+  <select name="closeminute">
+    {{#each closingminute}}
+      <option value="{{this}}">{{this}}</option>
+    {{/each}}
+  </select>
+  <input type="text" name="www">
+  <input type="text" name="fee">
+  <button type="submit">Add</submit>
+</form>
