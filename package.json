@@ -12,6 +12,7 @@
     "hbs": "*",
     "mongoose": "*",
     "moment": "*",
-    "underscore": "*"
+    "underscore": "*",
+    "i18n": "*"
   }
 }

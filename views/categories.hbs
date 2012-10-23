@@ -1,25 +1,27 @@
 <ul>
 {{#each categories}}
 <li class="categoryitem">
-  <a class="category" href="/cat/listevents/{{this.title}}">Events for {{this.title}}</a>
+  <a class="category" href="/cat/listevents/{{this.title}}">
+    {{__ "LABEL_EVENTS_FOR" this.title }}
+  </a>
   {{#unless this.isdefault}}
     <form action="/cat/default" method="post">
-      <button type="submit">Make default</button>
+      <button type="submit">{{__ "LABEL_MAKE_DEFAULT" }}</button>
       <input type="hidden" name="title" value="{{this.title}}">
     </form>
   {{/unless}}
   <form action="/cat/delete" method="post">
-     <button type="submit">Delete</button>
+     <button type="submit">{{__ "LABEL_DELETE" }}</button>
      <input type="hidden" name="title" value="{{this.title}}">
   </form>
-  <a href="/cat/newevent/{{this.title}}">New event</a>
+  <a href="/cat/newevent/{{this.title}}">{{__ "LABEL_NEW_EVENT" }}</a>
 </li>
 {{/each}}
 </ul>
 <form action="/cat/add" method="post">
   <input name="title" type="text">
-  <button type="submit">Add</button>
+  <button type="submit">{{__ "LABEL_ADD_CATEGORY" }}</button>
 </form>
 <form action="/cat/deleteall" method="post">
-  <button type="submit">Delete All</button>
+  <button type="submit">{{__ "LABEL_DELETE_ALL" }}</button>
 </form>

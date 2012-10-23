@@ -10,10 +10,16 @@ var express = require('express')
   , user = require('./routes/user')
   , http = require('http')
   , path = require('path')
-  , hbs = require('hbs');
+  , hbs = require('hbs')
+  , i18n = require('i18n');
 
 var app = express();
 mongoose.connect('mongodb://localhost/test');
+
+i18n.configure({
+    locales:['en', 'de'],
+    register: global
+});
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
@@ -23,6 +29,7 @@ app.configure(function(){
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(express.methodOverride());
+  app.use(i18n.init);
   app.use(app.router);
   app.use(require('stylus').middleware(__dirname + '/public'));
   app.use(express.static(path.join(__dirname, 'public')));
@@ -125,6 +132,10 @@ hbs.registerHelper('block', function(name) {
     // clear the block
     blocks[name] = [];
     return val;
+});
+
+hbs.registerHelper('__', function(key, parameters) {
+  return i18n.__(key, parameters);
 });
 
 http.createServer(app).listen(app.get('port'), function(){
