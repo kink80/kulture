@@ -17,7 +17,7 @@ var app = express();
 mongoose.connect('mongodb://localhost/test');
 
 i18n.configure({
-    locales:['en', 'de'],
+    locales:['en', 'cz'],
     register: global
 });
 
