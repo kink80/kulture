@@ -1,7 +1,8 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+.today {
+  width: 200px;
 }
-a {
-  color: #00b7ff;
+
+.options > * {
+  float: left;
+  margin: 2px 5px;
 }

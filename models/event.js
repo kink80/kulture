@@ -1,7 +1,8 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId,
-    moment = require('moment');
+    moment = require('moment'),
+    i18n = require('i18n');
 
 var eventSchema = new Schema({
     category: ObjectId,
@@ -17,4 +18,10 @@ var eventSchema = new Schema({
     fee: String
 });
 
-module.exports = mongoose.model('Event', eventSchema);
+var Event = mongoose.model('Event', eventSchema);
+Event.schema.path('title').validate(function(value) {
+   return /^\s*$/.test(value);
+}, i18n.__('ERROR_EMPTY_TITLE'));
+
+
+module.exports = Event; 

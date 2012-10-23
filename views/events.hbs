@@ -1,19 +1,41 @@
-<div>{{category}}</div>
-<div>{{date}}</div>
-<ul>
-<li>
-  <a href="{{today.link}}">
-    {{today.name}}
-  </a>
-</li>
+  <div class="options">
+    <h1 class="name">{{category}}</h1>
+    {{#each othercategories}}
+      <h1 class="name">
+        <a href="{{this.link}}">
+          {{this.title}}
+        </a>
+      </h1>
+    {{/each}}
+    <h1 class="name"> 
+      || 
+      <a href="{{today.link}}">
+        {{__ "LABEL_SHOW_TODAY" today.name}}
+      </a>
+    </h1>
+  </div>
+  <br><br>
+<div id="dayscontainer">
 {{#each futuredates}}
-  <li>
+  <div class="element today {{randomisotopeclass}}"> 
     <a href="{{this.link}}">
-      {{this.name}}
+      <h3 class="symbol">
+        <a href="{{this.link}}">
+          {{this.name}}
+        </a>
+      </h3>
+      <h2 class="name">{{ this.dayname }}</h2>
     </a>
-  </li>
+  </div>
 {{/each}}
-</ul>
+</div>
+<script>
+  $(function(){
+      $('#dayscontainer').isotope({
+        itemSelector: '.element'
+      });
+  });
+</script>
 <ul>
 {{#each events}}
 <li class="eventitem">

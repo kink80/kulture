@@ -11,7 +11,8 @@ var express = require('express')
   , http = require('http')
   , path = require('path')
   , hbs = require('hbs')
-  , i18n = require('i18n');
+  , i18n = require('i18n')
+  , settings = require('./controller/settings.js');
 
 var app = express();
 mongoose.connect('mongodb://localhost/test');
@@ -31,7 +32,6 @@ app.configure(function(){
   app.use(express.methodOverride());
   app.use(i18n.init);
   app.use(app.router);
-  app.use(require('stylus').middleware(__dirname + '/public'));
   app.use(express.static(path.join(__dirname, 'public')));
 });
 
@@ -136,6 +136,10 @@ hbs.registerHelper('block', function(name) {
 
 hbs.registerHelper('__', function(key, parameters) {
   return i18n.__(key, parameters);
+});
+
+hbs.registerHelper('randomisotopeclass', function() {
+  return settings.randomIsotopeClass();  
 });
 
 http.createServer(app).listen(app.get('port'), function(){

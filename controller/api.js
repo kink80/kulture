@@ -1,7 +1,9 @@
 var Category = require('../models/category.js'),
     Event = require('../models/event.js'),
     moment = require('moment'),
-    _ = require('underscore');
+    _ = require('underscore'),
+    i18n = require('i18n'),
+    settings = require('./settings.js');
 
 exports.addcategory = function(title, callback) {
   Category.findOne({title: title }, function(err, cat) {
@@ -88,47 +90,36 @@ exports.newEvent = function(title, callback) {
 exports.addEvent = function(title, eventObject, callback) {
   Category.findOne({title: title}, function(err, category) {
     eventObject.category = category._id;
+    eventObject.starts = new moment(eventObject.starts).sod().milliseconds();
+    eventObject.ends = new moment(eventObject.ends).eod().milliseconds();
+    eventObject.openhour = eventObject.openhour % 24;
+    eventObject.openminute = eventObject.openminute % 60;
+    eventObject.cloeshour = eventObject.closehour % 24;
+    eventObject.closeminute = eventObject.closeminute % 60;
     var evt = new Event(eventObject);
     evt.save();
     callback(null, evt);
   });
 };
 
-linkObject = function(date, title) {
-   var dt = new moment(date);
-   var url = '/events/' + dt.format('YYYYMMDD') + '/' + title;
-   var linkname = dt.format('DD/MM');
+var linkObject = function(date, title) {
+   var dt = new moment(date),
+       url = '/events/' + dt.format(settings.urlFormat()) + '/' + title,
+       linkname = dt.format(settings.nextDayFormat()),
+       dayname = i18n.__(dt.format('dddd'));
    return {
      link: url,
-     name: linkname
+     name: linkname,
+     dayname: dayname
    }; 
 };
 
-exports.listCategoryEvents = function(title, callback) {
-  Category.findOne({title: title}, function(err, category) {
-    var events = Event.find({
-         category: category._id,
-       }, function(e, events) {
-       callback(null, {
-           events: events
-       }); 
-     });
-  });
-};
-
-exports.listEvents = function(title, date, callback) {
-   var date = moment(date, ["YYYYMMDD", "YYMMDD", "YYMM", "YYYY"]);
+var listEventsForDate = function(title, date, callback) {
+   var date = moment(date, settings.acceptedDateFormats());
    if(!date.isValid()) {
        date = moment();
    }
    Category.findOne({title: title}, function(err, category) {
-     var futuredates = [],
-         startdate = date;
-     for(var i = 0; i < 7; i++) {
-       var dt = new moment(date).add('d', i);
-       futuredates.push(linkObject(dt, title));
-     };
-
      Event.find({
             category: category._id,
             starts: { $lte: date },
@@ -146,11 +137,39 @@ exports.listEvents = function(title, date, callback) {
        });
        callback(null, {
            date: date,
-           futuredates: futuredates,
            today: linkObject(new moment(), title),
            category: title,
-           events: filtered 
+           events: filtered
        });
      });
    })
+};
+
+var listOtherCategories = function(currentCategory, callback) {
+  Category.find({ title: { $ne: currentCategory }}, function(err, categories) {
+    callback(err, categories);
+  });
+};
+
+exports.listEvents = function(title, date, callback) {
+   var date = moment(date, settings.acceptedDateFormats()),
+       futuredates = [];
+   if(!date.isValid()) {
+       date = moment();
+   }
+   for(var i = 0; i < 7; i++) {
+      var dt = new moment(date).add('d', i);
+      futuredates.push(linkObject(dt, title));
+   }
+   listEventsForDate(title, date, function(err, result) {
+     result.futuredates = futuredates;
+     listOtherCategories(title, function(e, r) {
+        result.othercategories = _.map(r, function(other) {
+          var otherlinktoday = linkObject(new moment(), other.title);
+          otherlinktoday.title = other.title;
+          return otherlinktoday;
+        });
+        callback(e, result);
+     });
+   });
 };
